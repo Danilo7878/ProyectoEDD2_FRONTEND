@@ -16,6 +16,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.danil.duckychat.models.Usuario;
+import com.example.danil.duckychat.services.API;
+import com.example.danil.duckychat.services.ProveedorAPI;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,31 +27,44 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 public class Contactos extends AppCompatActivity {
 
     ListView listaContactos;
     public static List<String> miLista2 = new ArrayList<>();
-    private RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contactos);
-        requestQueue = Volley.newRequestQueue(this);
-        ObtenerContactos();
-        listaContactos = (ListView) findViewById(R.id.lvContactos);
+        ProveedorAPI.getService().TodosLosUsuarios().enqueue(new Callback<List<Usuario>>() {
+            @Override
+            public void onResponse(Call<List<Usuario>> call, retrofit2.Response<List<Usuario>> response) {
 
+                List<Usuario> lista = response.body();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
-        listaContactos.setAdapter(adapter);
-        listaContactos.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                for (Usuario user : lista){
+                    miLista2.add(user.getNombre());
+                }
+                listaContactos = (ListView) findViewById(R.id.lvContactos);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(Contactos.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
+                listaContactos.setAdapter(adapter);
+                listaContactos.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                    @Override
+                    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+                    {
+                        // Poner toda tu lógica aquí.
+                        String nombre = (String) arg0.getItemAtPosition(arg2);
+                        Toast.makeText(Contactos.this,("Este es una prueba: " + nombre), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
-            {
-                // Poner toda tu lógica aquí.
-                String nombre = (String) arg0.getItemAtPosition(arg2);
-                Toast.makeText(Contactos.this,("Este es una prueba: " + nombre), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<Usuario>> call, Throwable t) {
+                Toast.makeText(Contactos.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -69,34 +85,6 @@ public class Contactos extends AppCompatActivity {
             Toast.makeText(this, "Hilario Hueco", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void ObtenerContactos(){
-        String url = "http://192.168.43.214:3000/users";
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray myJsonArray = response.getJSONArray("users");
-                    for(int i = 0; i <myJsonArray.length();i++) {
-                        JSONObject usuarioObjeto = myJsonArray.getJSONObject(i);
-                        String Username = usuarioObjeto.getString("username");
-                        miLista2.add(Username);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }
-        );
-
-        requestQueue.add(request);
     }
 
     //Agregar a la lista uno por uno, solo lo mandas a llamar
