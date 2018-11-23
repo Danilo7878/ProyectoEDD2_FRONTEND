@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignUp" />
-        <activity android:name=".Contacts"></activity>
+        <activity android:name=".Contacts" />
+        <activity android:name=".ventanaChat" />
+        <activity android:name=".Contactos"></activity>
     </application>
 
 </manifest>

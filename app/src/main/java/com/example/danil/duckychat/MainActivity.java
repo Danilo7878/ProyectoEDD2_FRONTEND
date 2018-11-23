@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     public void iniciarSesión(View view){
         String usuario = etUser.getText().toString();
         String password_NoCifrado = etPass.getText().toString();
+
+        Intent contactosCambio = new Intent(this,Contactos.class);
+        startActivity(contactosCambio);
     }
 
     public void Registrarse(View view){

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DuckyChat.iml" filepath="$PROJECT_DIR$/DuckyChat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ProyectoEDD2_FRONTEND.iml" filepath="$PROJECT_DIR$/ProyectoEDD2_FRONTEND.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
