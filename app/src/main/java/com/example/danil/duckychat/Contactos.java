@@ -1,5 +1,6 @@
 package com.example.danil.duckychat;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -44,7 +45,7 @@ public class Contactos extends AppCompatActivity {
             public void onResponse(Call<List<Usuario>> call, retrofit2.Response<List<Usuario>> response) {
 
                 List<Usuario> lista = response.body();
-
+                miLista2.clear();
                 for (Usuario user : lista){
                     miLista2.add(user.getNombre());
                 }
@@ -56,8 +57,9 @@ public class Contactos extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
                     {
                         // Poner toda tu lógica aquí.
-                        String nombre = (String) arg0.getItemAtPosition(arg2);
-                        Toast.makeText(Contactos.this,("Este es una prueba: " + nombre), Toast.LENGTH_SHORT).show();
+                        //String nombre = (String) arg0.getItemAtPosition(arg2);
+                        String nombre = arg0.getItemAtPosition(arg2).toString();
+                        cambioVentana(nombre);
                     }
                 });
             }
@@ -69,6 +71,14 @@ public class Contactos extends AppCompatActivity {
         });
     }
 
+
+    public void cambioVentana(String nombres)
+    {
+        Intent cambio = new Intent(this,ventanaChat.class);
+        cambio.putExtra("usuario",nombres);
+        startActivity(cambio);
+
+    }
     //Mostrar y ocultar el menú
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.principal, menu);

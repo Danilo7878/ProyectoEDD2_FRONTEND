@@ -36,6 +36,7 @@ public class ventanaChat extends AppCompatActivity {
         miLista = (ListView) findViewById(R.id.lvChats);
 
         refrescar = (Button) findViewById(R.id.btnRefresh);
+
         refrescar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -43,6 +44,10 @@ public class ventanaChat extends AppCompatActivity {
                 refresh2();
             }
         });
+
+        Receptor = getIntent().getStringExtra("usuario");
+
+        Toast.makeText(this,("Este es una prueba: " + Receptor), Toast.LENGTH_SHORT).show();
 
         miLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -52,6 +57,7 @@ public class ventanaChat extends AppCompatActivity {
                 // Poner toda tu lógica aquí.
                 nombre = (String) arg0.getItemAtPosition(arg2);
                 numero = arg2;
+
             }
         });
 

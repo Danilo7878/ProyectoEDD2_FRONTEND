@@ -10,7 +10,7 @@ public class ProveedorAPI {
     {
         if(service==null){
             service = new Retrofit.Builder()
-                    .baseUrl("http://192.168.43.214:3000/")
+                    .baseUrl("http://192.168.0.20:3000/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build().create(API.class);
         }

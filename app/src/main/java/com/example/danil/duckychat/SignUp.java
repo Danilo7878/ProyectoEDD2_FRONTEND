@@ -47,7 +47,7 @@ public class SignUp extends AppCompatActivity {
     }
 
     public void IngresarUsuario(View view) throws JSONException {
-        String url = "http://192.168.1.57:3000/signup";
+        String url = "http://192.168.0.20:3000/signup";
         JSONObject body = new JSONObject();
         body.put("username", etUser.getText().toString());
         body.put("password", etPW.getText().toString());
