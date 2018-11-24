@@ -249,5 +249,5 @@ public class ventanaChat extends AppCompatActivity {
             }
         }
     }
-
+//lol
 }
