@@ -102,7 +102,7 @@ public class Contactos extends AppCompatActivity {
             startActivity(i);
         }
         else if(id == R.id.itemdelete){
-            
+
         }
         return super.onOptionsItemSelected(item);
     }
