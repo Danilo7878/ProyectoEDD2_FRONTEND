@@ -98,10 +98,11 @@ public class Contactos extends AppCompatActivity {
     public  boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
         if(id == R.id.itemsignout){
-            Toast.makeText(this, "Bryan Hueco", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this,MainActivity.class);
+            startActivity(i);
         }
         else if(id == R.id.itemdelete){
-            Toast.makeText(this, "Hilario Hueco", Toast.LENGTH_SHORT).show();
+            
         }
         return super.onOptionsItemSelected(item);
     }

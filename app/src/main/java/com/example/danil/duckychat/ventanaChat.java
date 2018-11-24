@@ -55,6 +55,7 @@ public class ventanaChat extends AppCompatActivity {
 
         refrescar = (Button) findViewById(R.id.btnRefresh);
 
+        /*
         refrescar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -62,7 +63,7 @@ public class ventanaChat extends AppCompatActivity {
                 refresh2();
             }
         });
-
+        */
         Receptor = getIntent().getStringExtra("usuario");
         Emisor = getIntent().getStringExtra("usuarioLogeado");
 
@@ -119,9 +120,7 @@ public class ventanaChat extends AppCompatActivity {
                             miLista2.add(recibirMensajes(mes.getMensaje(),mes.getEmisor()));
                         }
                     }
-                    miLista.setAdapter(null);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ventanaChat.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
-                    miLista.setAdapter(adapter);
+
             }
 
             @Override
@@ -129,6 +128,9 @@ public class ventanaChat extends AppCompatActivity {
 
             }
         });
+        miLista.setAdapter(null);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(ventanaChat.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
+        miLista.setAdapter(adapter);
     }
 
     public void enviarMensaje(View view)

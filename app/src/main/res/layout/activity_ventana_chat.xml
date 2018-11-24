@@ -30,7 +30,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:onClick="enviarMensaje"
-        android:text="Button"
+        android:text="Enviar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtMensaje" />
