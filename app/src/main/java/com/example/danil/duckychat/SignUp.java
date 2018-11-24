@@ -1,10 +1,12 @@
 package com.example.danil.duckychat;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -16,15 +18,20 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.danil.duckychat.models.Usuario;
+import com.example.danil.duckychat.services.ProveedorAPI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+
 public class SignUp extends AppCompatActivity {
 
-    private RequestQueue requestQueue;
     private EditText etUser;
     private EditText etPW;
     private EditText etNombre;
@@ -37,7 +44,6 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        requestQueue = Volley.newRequestQueue(this);
         etUser = (EditText)findViewById(R.id.editText3);
         etPW = (EditText)findViewById(R.id.editText5);
         etNombre = (EditText)findViewById(R.id.editText8);
@@ -46,57 +52,30 @@ public class SignUp extends AppCompatActivity {
         etCorreo = (EditText)findViewById(R.id.editText11);
     }
 
-    public void IngresarUsuario(View view) throws JSONException {
-        String url = "http://192.168.0.20:3000/signup";
-        JSONObject body = new JSONObject();
-        body.put("username", etUser.getText().toString());
-        body.put("password", etPW.getText().toString());
-        body.put("nombre", etNombre.getText().toString());
-        body.put("apellido", etApellido.getText().toString());
-        body.put("puesto", etPuesto.getText().toString());
-        body.put("correo", etCorreo.getText().toString());
-
-        final String requestBody = body.toString();
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.i("VOLLEY", response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("VOLLEY", error.toString());
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                try {
-                    return requestBody == null ? null : requestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                    return null;
+    public void IngresarUsuario(View view){
+        if(etUser.getText().toString().length() > 0 && etNombre.getText().toString().length() > 0 && etPW.getText().toString().length() > 0 &&
+                etApellido.getText().toString().length() > 0 && etPuesto.getText().toString().length() > 0 && etCorreo.getText().toString().length() > 0) {
+            Usuario user = new Usuario(etUser.getText().toString(), etPW.getText().toString(), etNombre.getText().toString(),
+                    etApellido.getText().toString(), etPuesto.getText().toString(), etCorreo.getText().toString()
+            );
+            ProveedorAPI.getService().createUserBody(user).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                    if(response.isSuccessful()){
+                        Toast.makeText(SignUp.this, "Usuario Creado, por favor autentiquese", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(SignUp.this, MainActivity.class);
+                        startActivity(i);
+                    }
                 }
-            }
 
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String responseString = "";
-                if (response != null) {
-                    responseString = String.valueOf(response.statusCode);
-                    // can get more details such as response.headers
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(SignUp.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-            }
-        };
-
-        requestQueue.add(stringRequest);
-
+            });
+        }
+        else{
+            Toast.makeText(SignUp.this, "Debe llenar todos lo campos", Toast.LENGTH_SHORT).show();
+        }
     }
 }

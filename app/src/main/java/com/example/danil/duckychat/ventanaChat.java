@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.danil.duckychat.models.Message;
+import com.example.danil.duckychat.services.ProveedorAPI;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,13 +25,18 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ventanaChat extends AppCompatActivity {
 
 
     EditText textoIngresar;
     ListView miLista;
-    String Emisor;
-    String Receptor;
+    String Emisor = "";
+    String Receptor = "";
     Button refrescar;
     public static int numero =0;
     String nombre;
@@ -55,29 +63,72 @@ public class ventanaChat extends AppCompatActivity {
         });
 
         Receptor = getIntent().getStringExtra("usuario");
+        Emisor = getIntent().getStringExtra("usuarioLogeado");
 
-        Toast.makeText(this,("Este es una prueba: " + Receptor), Toast.LENGTH_SHORT).show();
+        miLista2.clear();
+        ProveedorAPI.getService().Conversation().enqueue(new Callback<List<Message>>() {
+            @Override
+            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                if (response.isSuccessful()){
+                    List<Message> lista = response.body();
+                    for (Message mes : lista){
+                        miLista2.add(recibirMensajes(mes.getMensaje(),mes.getMensaje()));
+                    }
+                    miLista.setAdapter(null);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ventanaChat.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
+                    miLista.setAdapter(adapter);
+                }
 
-        miLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            }
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
-            {
-                // Poner toda tu lógica aquí.
-                nombre = (String) arg0.getItemAtPosition(arg2);
-                numero = arg2;
-
+            public void onFailure(Call<List<Message>> call, Throwable t) {
+                Toast.makeText(ventanaChat.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
 
+
     }
 
+    public void refresco(View view){
+        miLista2.clear();
+        ProveedorAPI.getService().Conversation().enqueue(new Callback<List<Message>>() {
+            @Override
+            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                    List<Message> lista = response.body();
+                    for (Message mes : lista){
+                        miLista2.add(recibirMensajes(mes.getMensaje(),mes.getMensaje()));
+                    }
+                    miLista.setAdapter(null);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ventanaChat.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
+                    miLista.setAdapter(adapter);
+            }
 
-    //Aca solo falta cifrar para que lo mande a la base de datos
+            @Override
+            public void onFailure(Call<List<Message>> call, Throwable t) {
+
+            }
+        });
+    }
+
     public void enviarMensaje(View view)
     {
-        //este estring es el que va cifrado
+        //este string es el que va cifrado
         String mensajeCifrado = retorno(textoIngresar.getText().toString(),5);
+        Message mens = new Message(Emisor,Receptor,mensajeCifrado);
+        ProveedorAPI.getService().createMessageBody(mens).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(ventanaChat.this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ventanaChat.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
         miLista2.add(mostarListView(Emisor,textoIngresar.getText().toString()));
         refresh();
     }
@@ -85,9 +136,7 @@ public class ventanaChat extends AppCompatActivity {
     //para que los mensajes nuevos aparezcan
     public void refresh()
     {
-        miLista.setAdapter(null);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
-        miLista.setAdapter(adapter);
+
     }
 
     //no lo tomes en cuenta es prueba
@@ -106,7 +155,7 @@ public class ventanaChat extends AppCompatActivity {
     }
 
     //Descifra el mensaje man
-    public String recibirMensajes(String textoCifrado, String receptor,String emisor)
+    public String recibirMensajes(String textoCifrado,String emisor)
     {
         Cifrado miDescifrado = new Cifrado();
 

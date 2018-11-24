@@ -5,11 +5,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.danil.duckychat.services.ProveedorAPI;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText etUser;
     private EditText etPass;
+    String usuario = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +30,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void iniciarSesión(View view){
-        String usuario = etUser.getText().toString();
+        usuario =etUser.getText().toString();
         String password_NoCifrado = etPass.getText().toString();
 
-        Intent contactosCambio = new Intent(this,Contactos.class);
-        startActivity(contactosCambio);
+        ProveedorAPI.getService().login(usuario, password_NoCifrado).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()){
+                    Intent contactosCambio = new Intent(MainActivity.this,Contactos.class);
+                    contactosCambio.putExtra("usuarioLogeado", usuario);
+                    startActivity(contactosCambio);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void Registrarse(View view){

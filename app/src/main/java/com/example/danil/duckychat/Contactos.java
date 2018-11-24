@@ -35,17 +35,18 @@ public class Contactos extends AppCompatActivity {
 
     ListView listaContactos;
     public static List<String> miLista2 = new ArrayList<>();
+    String usuario = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contactos);
+        usuario = getIntent().getStringExtra("usuarioLogeado");
         ProveedorAPI.getService().TodosLosUsuarios().enqueue(new Callback<List<Usuario>>() {
             @Override
             public void onResponse(Call<List<Usuario>> call, retrofit2.Response<List<Usuario>> response) {
-
-                List<Usuario> lista = response.body();
                 miLista2.clear();
+                List<Usuario> lista = response.body();
                 for (Usuario user : lista){
                     miLista2.add(user.getNombre());
                 }
@@ -56,14 +57,15 @@ public class Contactos extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
                     {
-                        // Poner toda tu lógica aquí.
-                        //String nombre = (String) arg0.getItemAtPosition(arg2);
-                        String nombre = arg0.getItemAtPosition(arg2).toString();
-                        cambioVentana(nombre);
+                        String nombre = (String) arg0.getItemAtPosition(arg2);
+                        //String nombre = arg0.getItemAtPosition(arg2).toString();
+                        Intent cambio = new Intent(Contactos.this,ventanaChat.class);
+                        cambio.putExtra("usuario",nombre);
+                        cambio.putExtra("usuarioLogeado",usuario);
+                        startActivity(cambio);
                     }
                 });
             }
-
             @Override
             public void onFailure(Call<List<Usuario>> call, Throwable t) {
                 Toast.makeText(Contactos.this, t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -76,6 +78,7 @@ public class Contactos extends AppCompatActivity {
     {
         Intent cambio = new Intent(this,ventanaChat.class);
         cambio.putExtra("usuario",nombres);
+        cambio.putExtra("usuarioLogeado",usuario);
         startActivity(cambio);
 
     }

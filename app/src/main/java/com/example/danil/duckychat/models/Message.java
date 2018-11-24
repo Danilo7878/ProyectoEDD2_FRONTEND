@@ -1,21 +1,13 @@
 package com.example.danil.duckychat.models;
 
-public class Mensaje {
+public class Message {
     private int _id;
     private String emisor, receptor, mensaje;
 
-    public Mensaje(String emisor, String receptor, String mensaje) {
+    public Message(String emisor, String receptor, String mensaje) {
         this.emisor = emisor;
         this.receptor = receptor;
         this.mensaje = mensaje;
-    }
-
-    public int get_id() {
-        return _id;
-    }
-
-    public void set_id(int _id) {
-        this._id = _id;
     }
 
     public String getEmisor() {
