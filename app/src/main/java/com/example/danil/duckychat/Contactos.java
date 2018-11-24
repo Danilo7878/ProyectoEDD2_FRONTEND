@@ -49,7 +49,7 @@ public class Contactos extends AppCompatActivity {
                     miLista2.clear();
                     List<Usuario> lista = response.body();
                     for (Usuario user : lista) {
-                        miLista2.add(user.getNombre());
+                        miLista2.add(user.getUsername());
                     }
                     listaContactos = (ListView) findViewById(R.id.lvContactos);
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(Contactos.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
