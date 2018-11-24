@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.danil.duckychat.models.jwt;
 import com.example.danil.duckychat.services.ProveedorAPI;
 
 import okhttp3.ResponseBody;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etUser;
     private EditText etPass;
     String usuario = "";
+    public static String JWT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +35,13 @@ public class MainActivity extends AppCompatActivity {
         usuario =etUser.getText().toString();
         String password_NoCifrado = etPass.getText().toString();
 
-        ProveedorAPI.getService().login(usuario, password_NoCifrado).enqueue(new Callback<ResponseBody>() {
+        ProveedorAPI.getService().login(usuario, password_NoCifrado).enqueue(new Callback<jwt>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(Call<jwt> call, Response<jwt> response) {
                 if (response.isSuccessful()){
+                    jwt TOKEN = response.body();
+                    JWT = TOKEN.getToken();
+
                     Intent contactosCambio = new Intent(MainActivity.this,Contactos.class);
                     contactosCambio.putExtra("usuarioLogeado", usuario);
                     startActivity(contactosCambio);
@@ -44,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<jwt> call, Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

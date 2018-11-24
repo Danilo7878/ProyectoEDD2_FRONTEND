@@ -1,5 +1,6 @@
 package com.example.danil.duckychat;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -66,7 +67,7 @@ public class ventanaChat extends AppCompatActivity {
         Emisor = getIntent().getStringExtra("usuarioLogeado");
 
         miLista2.clear();
-        ProveedorAPI.getService().Conversation().enqueue(new Callback<List<Message>>() {
+        ProveedorAPI.getService().Conversation(MainActivity.JWT).enqueue(new Callback<List<Message>>() {
             @Override
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
                 if (response.isSuccessful()){
@@ -77,6 +78,11 @@ public class ventanaChat extends AppCompatActivity {
                     miLista.setAdapter(null);
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(ventanaChat.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
                     miLista.setAdapter(adapter);
+                }
+                else {
+                    Toast.makeText(ventanaChat.this, "Expiró la sesión", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(ventanaChat.this, MainActivity.class);
+                    startActivity(i);
                 }
 
             }
@@ -92,7 +98,7 @@ public class ventanaChat extends AppCompatActivity {
 
     public void refresco(View view){
         miLista2.clear();
-        ProveedorAPI.getService().Conversation().enqueue(new Callback<List<Message>>() {
+        ProveedorAPI.getService().Conversation(MainActivity.JWT).enqueue(new Callback<List<Message>>() {
             @Override
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
                     List<Message> lista = response.body();
@@ -116,11 +122,16 @@ public class ventanaChat extends AppCompatActivity {
         //este string es el que va cifrado
         String mensajeCifrado = retorno(textoIngresar.getText().toString(),5);
         Message mens = new Message(Emisor,Receptor,mensajeCifrado);
-        ProveedorAPI.getService().createMessageBody(mens).enqueue(new Callback<ResponseBody>() {
+        ProveedorAPI.getService().createMessageBody(mens, MainActivity.JWT).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
                     Toast.makeText(ventanaChat.this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(ventanaChat.this, "Expiró la sesión", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(ventanaChat.this, MainActivity.class);
+                    startActivity(i);
                 }
             }
 

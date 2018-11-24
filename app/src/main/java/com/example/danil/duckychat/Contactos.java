@@ -42,29 +42,35 @@ public class Contactos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contactos);
         usuario = getIntent().getStringExtra("usuarioLogeado");
-        ProveedorAPI.getService().TodosLosUsuarios().enqueue(new Callback<List<Usuario>>() {
+        ProveedorAPI.getService().TodosLosUsuarios(MainActivity.JWT).enqueue(new Callback<List<Usuario>>() {
             @Override
             public void onResponse(Call<List<Usuario>> call, retrofit2.Response<List<Usuario>> response) {
-                miLista2.clear();
-                List<Usuario> lista = response.body();
-                for (Usuario user : lista){
-                    miLista2.add(user.getNombre());
-                }
-                listaContactos = (ListView) findViewById(R.id.lvContactos);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(Contactos.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
-                listaContactos.setAdapter(adapter);
-                listaContactos.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-                    @Override
-                    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
-                    {
-                        String nombre = (String) arg0.getItemAtPosition(arg2);
-                        //String nombre = arg0.getItemAtPosition(arg2).toString();
-                        Intent cambio = new Intent(Contactos.this,ventanaChat.class);
-                        cambio.putExtra("usuario",nombre);
-                        cambio.putExtra("usuarioLogeado",usuario);
-                        startActivity(cambio);
+                if(response.isSuccessful()) {
+                    miLista2.clear();
+                    List<Usuario> lista = response.body();
+                    for (Usuario user : lista) {
+                        miLista2.add(user.getNombre());
                     }
-                });
+                    listaContactos = (ListView) findViewById(R.id.lvContactos);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(Contactos.this, android.R.layout.simple_list_item_1, android.R.id.text1, miLista2);
+                    listaContactos.setAdapter(adapter);
+                    listaContactos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                            String nombre = (String) arg0.getItemAtPosition(arg2);
+                            //String nombre = arg0.getItemAtPosition(arg2).toString();
+                            Intent cambio = new Intent(Contactos.this, ventanaChat.class);
+                            cambio.putExtra("usuario", nombre);
+                            cambio.putExtra("usuarioLogeado", usuario);
+                            startActivity(cambio);
+                        }
+                    });
+                }
+                else {
+                    Toast.makeText(Contactos.this, "Expiró la sesión", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(Contactos.this, MainActivity.class);
+                    startActivity(i);
+                }
             }
             @Override
             public void onFailure(Call<List<Usuario>> call, Throwable t) {
